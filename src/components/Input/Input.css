@@ -1,0 +1,17 @@
+.input-title {
+    color: #FFF;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    border: none;
+    background: none;
+    width: 100%;
+    border-bottom: 1px solid #747474;
+}
+
+
+.invalid {
+    border: 1px solid red;
+    background: #582525;
+}
