@@ -3,10 +3,9 @@ import Button from '../Button/Button.jsx';
 import {useContext, useEffect, useReducer, useRef} from 'react';
 import {formReducer, INITIAL_STATE} from './JournalForm.state.js';
 import Input from '../Input/Input.jsx';
+import {UserContext} from '../../context/user.context.jsx';
 
 export default function JournalForm({inputData}) {
-
-	// const [formValidate, setFormValidate] = useState(INITIAL_STATE);
 
 	const [formValidate, dispatchForm] = useReducer(formReducer, INITIAL_STATE);
 
@@ -15,8 +14,7 @@ export default function JournalForm({inputData}) {
 	const titleRef = useRef();
 	const dateRef = useRef();
 	const textRef = useRef();
-
-	const {userId} = useContext();
+	const { userId } = useContext(UserContext);
 
 	const focusError = (isValid) => {
 		switch (true) {
@@ -24,12 +22,12 @@ export default function JournalForm({inputData}) {
 			titleRef.current.focus();
 			break;
 		case !isValid.date:
-			  dateRef.current.focus();
-			  break;
-		  case !isValid.text:
-			  textRef.current.focus();
-			  break;
-	  }
+			dateRef.current.focus();
+			break;
+		case !isValid.text:
+			textRef.current.focus();
+			break;
+		}
 	};
 
 	const addJournalItem = (e) => {
@@ -69,8 +67,8 @@ export default function JournalForm({inputData}) {
 
 	return (
 		<form className='journal-form' onSubmit={addJournalItem}>
+			{userId}
 			<div className='form-title__container'>
-				{userId}
 				<Input
 					type='title' name='title' ref={titleRef}
 					value={values.title}
@@ -118,5 +116,5 @@ export default function JournalForm({inputData}) {
 			</textarea>
 			<Button text='Сохранить'/>
 		</form>
-	);
+	); 
 }

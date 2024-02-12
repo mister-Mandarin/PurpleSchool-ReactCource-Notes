@@ -6,10 +6,10 @@ import JourlanList from './components/JourlanList/JourlanList.jsx';
 import JourlanAddButton from './components/JourlanAddButton/JourlanAddButton.jsx';
 import JournalForm from './components/JournalForm/JournalForm.jsx';
 import {useLocalStorage} from './hooks/useLocalStorage.hook.js';
-import {UserContext} from './context/user.context.js';
+import {UserContextProvider} from './context/user.context.jsx';
 
 function mapItems(items) {
-	if (!items) {
+	if (!items) { 
 		return [];
 	}
 	return items.map(i => ({
@@ -36,7 +36,7 @@ function App() {
 	};
 
 	return (
-		<UserContext.Provider value={{userId: 1}}>
+		<UserContextProvider>
 			<div className='app'>
 				<LeftPanel>
 					<Header />
@@ -47,7 +47,7 @@ function App() {
 					<JournalForm inputData={addJournalItem}/>
 				</Body>
 			</div>
-		</UserContext.Provider>
+		</UserContextProvider>
 	);
 }
 
