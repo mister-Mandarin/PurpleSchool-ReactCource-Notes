@@ -5,7 +5,7 @@ import {formReducer, INITIAL_STATE} from './JournalForm.state.js';
 import Input from '../Input/Input.jsx';
 import {UserContext} from '../../context/user.context.jsx';
 
-export default function JournalForm({inputData}) {
+export default function JournalForm({inputData, data, onDelete}) {
 
 	const [formValidate, dispatchForm] = useReducer(formReducer, INITIAL_STATE);
 
@@ -30,20 +30,21 @@ export default function JournalForm({inputData}) {
 		}
 	};
 
-	const addJournalItem = (e) => {
-		e.preventDefault();
-		//const formData = new FormData(e.target);
-		//const formProps = Object.fromEntries(formData);
-		//dispatchForm({type: 'SUBMIT', payload: formProps});
-		dispatchForm({type: 'SUBMIT'});
-	};
+	useEffect(() => {
+		if (!data) {
+			dispatchForm({type: 'CLEAR'});
+			dispatchForm({ type: 'WRITE_VALUES', payload: { userId }});
+		}
+		dispatchForm({ type: 'WRITE_VALUES', payload: { ...data }});
+	}, [data]);
 
 	useEffect(()=> {
 		if (isFormReadyToSubmit) {
 			inputData(values);
 			dispatchForm({type: 'CLEAR'});
+			dispatchForm({ type: 'WRITE_VALUES', payload: { userId }});
 		}
-	}, [isFormReadyToSubmit, values, inputData]);
+	}, [isFormReadyToSubmit, values, inputData, userId]);
 
 	//Очистка состояния красного фона
 	useEffect(() => {
@@ -61,13 +62,30 @@ export default function JournalForm({inputData}) {
 		};
 	}, [isValid]);
 
+	useEffect(() => {
+		dispatchForm({type: 'WRITE_VALUES', payload: {userId: userId }});
+	}, [userId]);
+
+	const addJournalItem = (e) => {
+		e.preventDefault();
+		//const formData = new FormData(e.target);
+		//const formProps = Object.fromEntries(formData);
+		//dispatchForm({type: 'SUBMIT', payload: formProps});
+		dispatchForm({type: 'SUBMIT'});
+	};
+
 	const onChange = (e) => {
 		dispatchForm({type: 'WRITE_VALUES', payload: {[e.target.name]: e.target.value} });
 	};
 
+	const deleteCurrentNote = () => {
+		onDelete(data.id);
+		dispatchForm({type: 'CLEAR'});
+		dispatchForm({ type: 'WRITE_VALUES', payload: { userId }});
+	};
+
 	return (
 		<form className='journal-form' onSubmit={addJournalItem}>
-			{userId}
 			<div className='form-title__container'>
 				<Input
 					type='title' name='title' ref={titleRef}
@@ -76,7 +94,12 @@ export default function JournalForm({inputData}) {
 					appearance='title'
 					isValid={!isValid.title}
 				/>
-				<img src="/archiv.svg" alt=""/>
+				{data?.id && <button
+					type='button'
+					className='delete'
+					onClick={deleteCurrentNote}>
+					<img src="/archiv.svg" alt=""/>
+				</button>}
 			</div>
 			<div className='form-row'>
 				<label htmlFor="date" className='form-label'>
@@ -89,7 +112,7 @@ export default function JournalForm({inputData}) {
 					ref={dateRef}
 					onChange={onChange}
 					isValid={!isValid.date}
-					value={values.date}
+					value={values.date ? new Date(values.date).toISOString().slice(0, 10) : ''}
 					id='date'/>
 			</div>
 			<div className='form-row'>
@@ -114,7 +137,7 @@ export default function JournalForm({inputData}) {
 				value={values.text}
 				className={`input ${isValid.text ? '' : 'invalid'}`}>
 			</textarea>
-			<Button text='Сохранить'/>
+			<Button>Сохранить</Button>
 		</form>
 	); 
 }
